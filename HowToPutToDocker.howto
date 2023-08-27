@@ -1,0 +1,8 @@
+change in application.yml
+data.redis.host: localhost
+to
+data.redis.host: redis
+
+1) ./gradlew build
+2) cp ./build/libs/CommTh-0.0.1-SNAPSHOT.jar (without -plain) to ./target/CommTh.jar
+3) docker-compose up --build

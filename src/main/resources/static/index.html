@@ -1,0 +1,51 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="container unauthenticated">
+    <div id="login-status">
+        <!-- Initially, show "Log in with GitHub" -->
+        Log in with GitHub: <a href="/oauth2/authorization/github">click here</a>
+    </div>
+</div>
+<div class="container authenticated">
+    <div id="user-status">
+        <!-- Initially, this is hidden. It will show "Logged in as: " when data.name exists -->
+        Logged in as: <span id="user"></span>
+        <div>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $.get("/api/v1/user", function(data) {
+        if (data.name) {
+            // If data.name exists, show "Logged in as:" and hide "Log in with GitHub"
+            $("#user").html(data.name);
+            $("#user-status").show();
+            $("#login-status").hide();
+            $.get("/api/v1/oauth/ensureuser");
+        } else {
+            // If data.name doesn't exist, show "Log in with GitHub" and hide "Logged in as:"
+            $("#login-status").show();
+            $("#user-status").hide();
+        }
+    });
+</script>
+
+<script type="text/javascript" src="/webjars/js-cookie/js.cookie.js"></script>
+
+<script>
+    $.ajaxSetup({
+        beforeSend: function(xhr, settings) {
+            if (settings.type == 'POST' || settings.type == 'PUT'
+                || settings.type == 'DELETE') {
+                if (!(/^http:.*/.test(settings.url) || /^https:.*/
+                    .test(settings.url))) {
+                    // Only send the token to relative URLs i.e. locally.
+                    xhr.setRequestHeader("X-XSRF-TOKEN",
+                        Cookies.get('XSRF-TOKEN'));
+                }
+            }
+        }
+    });
+</script>

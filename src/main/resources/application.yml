@@ -1,0 +1,41 @@
+spring:
+  security.oauth2.client.registration:
+    github:
+      clientId: 49699e7a433919d47a80
+      clientSecret: 5ca36c47c96ce8bae633e5f79cec2075e4a9e7b7
+  application:
+    name: commth
+  datasource:
+    username : postgres
+    password : postgres
+    driver-class-name : org.postgresql.Driver
+    url : jdbc:postgresql://localhost:5432/chat
+
+  jpa:
+    properties.hibernate:
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+      show_sql : true
+      format_sql : true
+      hdm2ddl.auto : validate
+      open-in-vew : false
+  profiles:
+    include: 'js-cookie'
+  data:
+    redis:
+#      host: redis
+      host: localhost
+  cassandra:
+    port: 9042
+    contact-points: localhost
+#    contact-points: cassandra
+    schema-action: CREATE_IF_NOT_EXISTS
+    request.timeout: 10s
+    local-datacenter: datacenter1
+    keyspace-name: spring_cassandra
+    connection:
+      connect-timeout: 10s
+
+
+logging:
+  file:
+    name: "logs/applicationRuntime.log"
