@@ -26,7 +26,4 @@ public class User {
 
     @Column
     String mail;
-
-    @Column
-    int chatQuantity;
 }

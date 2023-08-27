@@ -3,9 +3,8 @@ drop table if exists message;
 
 create table users (
                       id bigserial primary key ,
-                      username char(128) not null unique ,
-                      mail char(128) not null unique,
-                      chat_quantity int not null
+                      username char(128) not null unique,
+                      mail char(128) not null unique
 );
 
 create table message (

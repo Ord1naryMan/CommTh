@@ -10,7 +10,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     volumes:
-      - .src/main/resources/sql:/docker-entrypoint-initdb.d
+      - ./src/main/resources/sql:/docker-entrypoint-initdb.d
     ports:
       - "5433:5432"
 
@@ -59,7 +59,6 @@ services:
   haproxy:
     image: docker.io/haproxy:lts-alpine
     restart: on-failure
-    #    network_mode: host
     volumes:
       - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
     command: haproxy -f /usr/local/etc/haproxy/haproxy.cfg

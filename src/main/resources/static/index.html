@@ -18,9 +18,9 @@
 
 <script type="text/javascript">
     $.get("/api/v1/user", function(data) {
-        if (data.name) {
+        if (data.username) {
             // If data.name exists, show "Logged in as:" and hide "Log in with GitHub"
-            $("#user").html(data.name);
+            $("#user").html(data.username);
             $("#user-status").show();
             $("#login-status").hide();
             $.get("/api/v1/oauth/ensureuser");

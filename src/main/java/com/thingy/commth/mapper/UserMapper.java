@@ -9,7 +9,6 @@ public class UserMapper {
     public static UserReadDto map(User obj) {
         return UserReadDto.builder()
                 .id(obj.getId())
-                .chatQuantity(obj.getChatQuantity())
                 .username(obj.getUsername())
                 .mail(obj.getMail())
                 .build();
@@ -17,7 +16,6 @@ public class UserMapper {
 
     public static User map(UserCreateEditDto obj) {
         return User.builder()
-                .chatQuantity(obj.getChatQuantity())
                 .username(obj.getUsername())
                 .mail(obj.getMail())
                 .build();

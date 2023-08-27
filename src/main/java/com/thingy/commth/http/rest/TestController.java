@@ -13,7 +13,7 @@ public class TestController {
     @GetMapping("/hi")
     public String test(@AuthenticationPrincipal OAuth2User principal) {
         log.info("access");
-//        log.info(principal.getAttributes().toString());
+        log.info(principal.getAttributes().toString());
         return "hello";
     }
 }
