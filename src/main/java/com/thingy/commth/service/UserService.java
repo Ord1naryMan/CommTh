@@ -1,6 +1,5 @@
 package com.thingy.commth.service;
 
-import com.thingy.commth.db.entity.User;
 import com.thingy.commth.db.repository.UserRepository;
 import com.thingy.commth.dto.UserCreateEditDto;
 import com.thingy.commth.dto.UserReadDto;
@@ -19,7 +18,7 @@ public class UserService {
 
     @Transactional
     public void save(UserCreateEditDto obj) {
-        User user = userRepository.save(UserMapper.map(obj));
+        userRepository.save(UserMapper.map(obj));
     }
 
     public UserReadDto loadUserByUsername(String uName) {
@@ -30,5 +29,9 @@ public class UserService {
 
     public boolean isUsernameExists(String uName) {
         return userRepository.getUserByUsernameIgnoreCase(uName).isPresent();
+    }
+
+    public UserReadDto getUserById(long id) {
+        return UserMapper.map(userRepository.getUserById(id));
     }
 }

@@ -1,3 +1,5 @@
+-- docker exec -it commth-db-1 bash -c "psql -U postgres -d chat"
+
 drop table if exists users;
 drop table if exists message;
 

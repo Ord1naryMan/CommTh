@@ -29,7 +29,6 @@ public class OauthRestController {
             userService.save(UserCreateEditDto.builder()
                             .username(uName)
                             .mail(principal.getAttribute("email"))
-                            .chatQuantity(0)
                     .build());
         }
         log.info("ensure user here");

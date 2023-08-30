@@ -13,5 +13,4 @@ public class UserCreateEditDto {
 
     String username;
     String mail;
-    int chatQuantity;
 }

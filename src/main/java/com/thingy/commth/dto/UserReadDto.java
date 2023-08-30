@@ -14,5 +14,4 @@ public class UserReadDto {
     long id;
     String username;
     String mail;
-    int chatQuantity;
 }

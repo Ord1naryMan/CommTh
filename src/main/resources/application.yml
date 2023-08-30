@@ -22,11 +22,11 @@ spring:
     include: 'js-cookie'
   data:
     redis:
-#      host: redis
-      host: localhost
+#     host: redis
+       host: localhost
   cassandra:
     port: 9042
-#    contact-points: cassandra
+#   contact-points: cassandra
     contact-points: localhost
     schema-action: CREATE_IF_NOT_EXISTS
     request.timeout: 10s
