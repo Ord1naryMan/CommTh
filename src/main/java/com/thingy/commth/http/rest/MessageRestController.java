@@ -4,6 +4,7 @@ import com.thingy.commth.db.entity.MessageContent;
 import com.thingy.commth.dto.MessageCreateEditDto;
 import com.thingy.commth.dto.MessageShowDto;
 import com.thingy.commth.dto.SendMessageDto;
+import com.thingy.commth.dto.UserReadDto;
 import com.thingy.commth.service.MessageContentService;
 import com.thingy.commth.service.MessageService;
 import com.thingy.commth.service.UserService;
@@ -13,18 +14,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -41,7 +41,11 @@ public class MessageRestController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     public void send(@AuthenticationPrincipal OAuth2User principal,
-                     SendMessageDto sendMessageDto) {
+                     @RequestBody SendMessageDto sendMessageDto) {
+
+        log.info("Preview:");
+        log.info("usernameTo: " + sendMessageDto.getUsernameTo());
+        log.info("MessageContent: " + sendMessageDto.getMessageContent());
         long usersIdFrom = userService
                 .loadUserByUsername(principal.getAttribute("login"))
                 .getId();
@@ -71,27 +75,29 @@ public class MessageRestController {
         //--end-test----
     }
 
-    @GetMapping("/{usernameTo}/{date}")
-    public Map<String, MessageShowDto> getMessageHistory(@PathVariable String usernameTo,
-                                                         @PathVariable LocalDate date,
+    @GetMapping
+    public List<MessageShowDto> getMessageHistory(@RequestParam String username,
+                                                         @RequestParam LocalDate date,
                                                          @AuthenticationPrincipal OAuth2User principal) {
         log.info("trying to show history");
-        log.info(date.toString());
+        log.info("Username1: " + username);
+        log.info("Username2: " + principal.getAttribute("login"));
+        UserReadDto userTo = userService.loadUserByUsername(username);
+
+        if (userTo == null) {
+            log.info("Username to is null, I won't send history");
+            return List.of();
+        }
         List<MessageShowDto> localMessageHistory = messageService
-                .getMessagesByUsersIdFromAndToAndTimeBetween(
+                .getMessageHistory(
                         userService.loadUserByUsername(principal.getAttribute("login")).getId(),
-                        userService.loadUserByUsername(usernameTo).getId(),
+                        userTo.getId(),
                         date.atStartOfDay(),
                         date.plusDays(1).atStartOfDay()
                 );
 
         localMessageHistory.sort(Comparator.naturalOrder());
 
-        Map<String, MessageShowDto> jsonMessageHistory = new LinkedHashMap<>();
-
-        for (int i = 0; i < localMessageHistory.size(); i++) {
-            jsonMessageHistory.put(String.valueOf(i), localMessageHistory.get(i));
-        }
-        return jsonMessageHistory;
+        return localMessageHistory;
     }
 }
