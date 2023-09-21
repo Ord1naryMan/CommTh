@@ -27,10 +27,10 @@ public class MessageService {
         return messageRepository.save(MessageMapper.map(obj)).getMessageId();
     }
 
-    public List<MessageShowDto> getMessagesByUsersIdFromAndToAndTimeBetween(
+    public List<MessageShowDto> getMessageHistory(
             long usersIdFrom, long usersIdTo, LocalDateTime after, LocalDateTime before
     ) {
-        return messageRepository.getMessagesByUsersIdFromAndUsersIdToAndTimeBetween(
+        return messageRepository.getMessages(
                 usersIdFrom, usersIdTo, after, before
         )
                 .stream()

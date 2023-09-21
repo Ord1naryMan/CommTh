@@ -25,10 +25,14 @@ public class OauthRestController {
             log.info("username is null");
             return;
         }
+        String email = principal.getAttribute("email");
+        if (email == null) {
+            email = "";
+        }
         if(!userService.isUsernameExists(uName)) {
             userService.save(UserCreateEditDto.builder()
                             .username(uName)
-                            .mail(principal.getAttribute("email"))
+                            .mail(email)
                     .build());
         }
         log.info("ensure user here");

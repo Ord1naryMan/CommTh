@@ -26,11 +26,15 @@ public class MessageMapper {
 
     public MessageShowDto mapToShow(Message obj) {
         return MessageShowDto.builder()
-                .usernameTo(userService.getUserById(obj.getUsersIdTo()).getUsername())
-                .text(
-                        messageContentService.findById(obj.getMessageId())
-                        .orElse(new MessageContent(obj.getMessageId(), ""))
-                                .getMessageContent()
+                .usernameTo(
+                        userService.getUserById(obj.getUsersIdTo())
+                                .getUsername().strip()
+                )
+                .text(messageContentService.findById(obj.getMessageId())
+                        .orElse(new MessageContent(
+                                obj.getMessageId(),
+                                ""
+                                )).getMessageContent()
                 )
                 .time(obj.getTime())
                 .build();

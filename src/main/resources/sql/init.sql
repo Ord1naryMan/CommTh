@@ -6,7 +6,7 @@ drop table if exists message;
 create table users (
                       id bigserial primary key ,
                       username char(128) not null unique,
-                      mail char(128) not null unique
+                      mail char(128) not null
 );
 
 create table message (

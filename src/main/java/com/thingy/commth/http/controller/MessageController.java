@@ -12,6 +12,6 @@ public class MessageController {
 
     @GetMapping
     public String showMessageSending() {
-        return "message/test.html";
+        return "message/message.html";
     }
 }

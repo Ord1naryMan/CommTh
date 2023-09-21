@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -18,8 +19,7 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests(req -> req.requestMatchers(allowedUrls).permitAll()
                         .anyRequest().authenticated()
                 )
-                .csrf(c -> c
-                        .disable())
+                .csrf(AbstractHttpConfigurer::disable)
 //                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .formLogin(form -> form.loginPage("/login"))
                 .logout(l -> l
