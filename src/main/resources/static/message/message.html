@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat Application</title>
+    <link rel="stylesheet" href="message/style.css">
+</head>
+<body>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<h1>Chat Application</h1>
+
+<!-- Recipient Input -->
+<input type="text" id="recipientInput" placeholder="Enter recipient's login...">
+
+<button onclick="openNewChat()">Start New Chat</button>
+<!-- User Input -->
+
+
+<!-- Chat Tabs -->
+<div id="chatTabs">
+    <!-- Add new chat tabs dynamically here -->
+</div>
+
+<!-- Chat History -->
+<div id="chatHistory">
+    <!-- Display chat history here -->
+</div>
+
+<input type="text" id="messageInput" placeholder="Type your message...">
+
+<button onclick="sendMessage()">Send</button>
+
+<script>
+
+
+    const chatHistory = [];
+
+    async function sendMessage() {
+        const recipientInput = document.getElementById("recipientInput");
+        const messageInput = document.getElementById("messageInput");
+        const message = messageInput.value;
+
+        const activeTab = document.querySelector(".activeTab");
+        const tabId = activeTab.getAttribute("data-tab-id");
+        // const chat = chatHistory.find(chat => chat.tabId === tabId);
+        // chat.messages.push({ usernameTo: tabId, text: message });
+
+        recipientInput.value = "";
+        messageInput.value = "";
+
+        console.log(JSON.stringify({
+            usernameTo: tabId,
+            messageContent: message
+        }));
+
+        await $.ajax({
+            type: "POST",
+            url: "/api/v1/message",
+            data: JSON.stringify({usernameTo: tabId, messageContent: message}),
+            contentType: "application/json"
+        });
+
+        displayChatHistory(tabId);
+    }
+
+    function makeActive(newTab) {
+        const tabs = document.querySelectorAll(".chatTab");
+        tabs.forEach(tab => tab.classList.remove("activeTab"));
+        newTab.classList.add("activeTab");
+    }
+
+    async function isUserExist(recipient) {
+        const response = await fetch(`/api/v1/user/${recipient}`)
+        return response.ok;
+    }
+
+    async function getUsernameSpelling(recipient) {
+        return await fetch(`/api/v1/user/${recipient}`)
+            .then(response => response.json())
+            .then(json => json.username);
+    }
+
+    async function openNewChat() {
+        const recipientInput = document.getElementById("recipientInput");
+        const recipient = recipientInput.value;
+        if (!recipient) {
+            alert("Please enter a recipient's login.");
+            return;
+        }
+
+        const chat = chatHistory.find(chat =>
+            chat.tabId.toLowerCase() === recipient.toLowerCase()
+        );
+        if (chat) {
+            alert("This chat exists");
+            return;
+        }
+
+        if (!await isUserExist(recipient)) {
+            alert("This user doesn't exist");
+            return;
+        }
+
+        const tabId = await getUsernameSpelling(recipient);
+        const newTab = document.createElement("button");
+        newTab.textContent = tabId;
+        newTab.setAttribute("data-tab-id", tabId);
+        newTab.classList.add("chatTab");
+        newTab.addEventListener("click", () => {
+            makeActive(newTab);
+            displayChatHistory(tabId);
+        });
+
+        document.getElementById("chatTabs").appendChild(newTab);
+
+        chatHistory.push({tabId, messages: []});
+
+        makeActive(newTab);
+        displayChatHistory(tabId);
+    }
+
+    function displayChatHistory(tabId) {
+
+        const chat = chatHistory.find(chat => chat.tabId === tabId);
+
+        fetch(`/api/v1/message?username=${tabId}&date=${getDate()}`)
+            .then(response => response.json())
+            .then(data => {
+                chat.messages = data;
+
+                const chatHistoryDiv = document.getElementById("chatHistory");
+                chatHistoryDiv.innerHTML = "";
+                chat.messages.forEach(msg => {
+                    const messageDiv = document.createElement("div");
+
+                    const timeNoMillis = msg.time.slice(
+                        msg.time.indexOf('T') + 1, msg.time.lastIndexOf('.')
+                    );
+
+                    if (msg.usernameTo.toUpperCase() === tabId.toUpperCase()) {
+                        messageDiv.innerHTML += `You: at ${timeNoMillis}`;
+                    } else {
+                        messageDiv.innerHTML += `${tabId}: at ${timeNoMillis}`;
+                    }
+
+                    messageDiv.innerHTML += "<br>"
+                    messageDiv.innerHTML += `${msg.text}`;
+
+                    chatHistoryDiv.appendChild(messageDiv);
+                    chatHistoryDiv.appendChild(document.createElement("br"));
+                });
+            })
+            .catch(error => console.error(error));
+    }
+
+    function getDate() {
+        const date = new Date();
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        return [year, month, day].join('-');
+    }
+</script>
+</body>
+</html>
+
